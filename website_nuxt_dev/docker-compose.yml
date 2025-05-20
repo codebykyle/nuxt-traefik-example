@@ -1,0 +1,25 @@
+services:
+  nuxt-dev:
+    build:
+      context: ../website_nuxt
+      dockerfile: Dockerfile
+      target: dev
+    volumes:
+      - ../nuxt:/app
+      - /app/node_modules      # avoid overwriting installed deps
+    environment:
+      - NODE_ENV=development
+      - CHOKIDAR_USEPOLLING=true  # if you hit inotify limits on Alpine
+    ports:
+      - "3000:3000"
+    networks:
+      - traefik
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.nuxt-dev.rule=Host(`dev.kyle-desktop.local`)"
+      - "traefik.http.routers.nuxt-dev.entrypoints=web"
+      - "traefik.http.services.nuxt-dev.loadbalancer.server.port=3000"
+      - "traefik.http.routers.nuxt-dev.middlewares=authentik@docker"
+networks:
+  traefik:
+    external: true

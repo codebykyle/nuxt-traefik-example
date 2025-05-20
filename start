@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+default_services=(
+  database_postgresql
+  app_traefik
+  app_authentik
+)
+
+# If the user passed args, use them; otherwise use the default list
+services=("$@")
+
+if [ ${#services[@]} -eq 0 ]; then
+  services=("${default_services[@]}")
+fi
+
+for svc in "${services[@]}"; do
+  (
+    cd "$svc" || { echo "❌  $svc not found – skipping"; exit 1; }
+    echo "🔄  Restarting $svc ..."
+    docker compose --env-file ../.env down --remove-orphans
+    docker compose --env-file ../.env up -d
+  )
+done

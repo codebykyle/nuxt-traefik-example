@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+git pull origin master
+
+# We need to find what changed from our last pull and pipe it into start...
+
+./start
